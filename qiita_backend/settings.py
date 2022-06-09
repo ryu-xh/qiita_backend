@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'users',
+    'items',
 ]
 
 MIDDLEWARE = [
@@ -141,6 +142,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+    'PAGE_SIZE': 10,
 }
 
 SIMPLE_JWT = {
