@@ -4,11 +4,12 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
     signin,
-    signup
+    signup,
+    UserViewSet
 )
 
-router = router = routers.DefaultRouter()
-# router.register(r'users', UserViewSet)
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
 
 
 urlpatterns = [

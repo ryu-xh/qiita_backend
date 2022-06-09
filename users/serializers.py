@@ -15,9 +15,6 @@ class UserSerializerBase(serializers.ModelSerializer):
             'profile_image_url',
         )
 
-        read_only_fields = (
-        )
-
 
 class UserReadOnlySerializer(UserSerializerBase):
     class Meta(UserSerializerBase.Meta):
@@ -25,7 +22,7 @@ class UserReadOnlySerializer(UserSerializerBase):
             'item_count',
         )
 
-        read_only_fields = UserSerializerBase.Meta.read_only_fields + (
+        read_only_fields = (
             'handle',
             'username',
             'profile_image_url',
@@ -36,5 +33,3 @@ class UserReadOnlySerializer(UserSerializerBase):
 class UserUpsertSerializer(UserSerializerBase):
     class Meta(UserSerializerBase.Meta):
         fields = UserSerializerBase.Meta.fields
-
-        read_only_fields = UserSerializerBase.Meta.read_only_fields

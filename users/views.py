@@ -1,11 +1,28 @@
 from django.db import transaction
-from rest_framework import status
+from psycopg2 import IntegrityError
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.forms import AuthenticationForm
-from users.models import User
+from .forms import AuthenticationForm
+from .models import User
+from .serializers import UserReadOnlySerializer
+
+
+class _UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserReadOnlySerializer
+    lookup_field = 'handle'
+    ordering = ['-date_joined']
+
+    def get_object(self):
+        return super().get_object()
+
+
+class UserViewSet(_UserViewSet):
+    def get_queryset(self):
+        return super().get_queryset().filter(handle=self.request.user.handle)
 
 
 @api_view(['POST'])
@@ -16,7 +33,7 @@ def signin(request):
 
     data = form.cleaned_data
 
-    user = User.objects.get(handle=data['handle'])
+    user = User.objects.filter(handle=data['handle']).first()
 
     if user is None or not user.check_password(data['password']):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -48,6 +65,6 @@ def signup(request):
         with transaction.atomic():
             user.save()
     except Exception as e:
-        return Response(e, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     return Response(status=status.HTTP_200_OK)
