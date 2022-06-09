@@ -7,12 +7,12 @@ from .views import (
     signup
 )
 
-api_router = routers.DefaultRouter()
-# api_router.register(r'users', UserViewSet)
+router = router = routers.DefaultRouter()
+# router.register(r'users', UserViewSet)
 
 
 urlpatterns = [
-    path('', include(api_router.urls)),
+    path('', include(router.urls)),
     path('auth/signup', signup),
     path('auth/signin', signin),
     path('auth/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
