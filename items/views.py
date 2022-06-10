@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.request import Request
+from rest_framework.decorators import action
 
 from qiita_backend.view_base import DisallowModifyOthersMixin
 from qiita_backend.pagination import CursorPagination
@@ -42,6 +43,21 @@ class ItemViewSet(
             self.request.method,
             serializer_class['__default__']
         )
+
+    @action(methods=['POST', 'DELETE'], detail=True, url_path='lgtm')
+    def lgtm(self, request, uuid):
+        """
+        ItemをLGTMしたり解除したり
+        """
+        item = self.get_object()
+
+        if request.method == 'POST':
+            item.lgtm(user=request.user)
+
+        elif request.method == 'DELETE':
+            item.unlgtm(user=request.user)
+
+        return self.retrieve(request, uuid)
 
 
 class TagsViewSet(APIView, CursorPagination):

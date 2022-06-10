@@ -31,3 +31,44 @@ class Item(models.Model):
         """
 
         return tag in self.tags
+
+    @property
+    def lgtm_count(self) -> int:
+        """
+        LGTMの数
+        """
+
+        return self.lgtms.count()
+
+    def lgtm(self, user: User) -> bool:
+        """
+        LGTM
+        """
+
+        if self.lgtms.filter(user=user).exists():
+            return False
+
+        self.lgtms.create(user=user)
+        return True
+
+    def unlgtm(self, user: User) -> bool:
+        """
+        LGTMを解除
+        """
+
+        if not self.lgtms.filter(user=user).exists():
+            return False
+
+        self.lgtms.filter(user=user).delete()
+        return True
+
+
+class Lgtm(models.Model):
+    """
+    LGTM
+    """
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="lgtms", null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lgtms", null=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True, null=False)

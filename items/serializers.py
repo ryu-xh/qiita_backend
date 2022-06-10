@@ -30,6 +30,7 @@ class ItemReadOnlySerializer(ItemSerializerBase):
     class Meta(ItemSerializerBase.Meta):
         fields = ItemSerializerBase.Meta.fields + (
             'user',
+            'lgtm_count',
         )
 
         read_only_fields = ItemSerializerBase.Meta.read_only_fields + (
@@ -37,6 +38,7 @@ class ItemReadOnlySerializer(ItemSerializerBase):
             'body',
             'tags',
             'user',
+            'lgtm_count',
         )
 
     user = UserReadOnlySerializer()
