@@ -1,13 +1,17 @@
 from django.db import transaction
-from psycopg2 import IntegrityError
 from rest_framework import status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
+from rest_framework.pagination import CursorPagination
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from items.serializers import ItemReadOnlySerializer
+from qiita_backend.view_base import DisallowModifyOthersMixin
 from .forms import AuthenticationForm
 from .models import User
-from .serializers import UserReadOnlySerializer
+from .serializers import UserReadOnlySerializer, UserUpsertSerializer
 
 
 class _UserViewSet(viewsets.ModelViewSet):
@@ -20,9 +24,35 @@ class _UserViewSet(viewsets.ModelViewSet):
         return super().get_object()
 
 
-class UserViewSet(_UserViewSet):
-    def get_queryset(self):
-        return super().get_queryset().filter(handle=self.request.user.handle)
+class UserViewSet(
+    DisallowModifyOthersMixin,
+    _UserViewSet
+):
+
+    def get_serializer_class(self):
+        serializer_class = {
+            'GET': UserReadOnlySerializer,
+            '__default__': UserUpsertSerializer
+        }
+
+        return serializer_class.get(
+            self.request.method,
+            serializer_class['__default__']
+        )
+
+
+class SpecificUserItems(APIView, CursorPagination):
+    """
+    特定ユーザーのアイテムを取得する
+    """
+    serializer_class = ItemReadOnlySerializer
+
+    def get(self, request: Request, handle: str):
+        user = User.objects.get(handle=handle)
+        items = user.items.all()
+        queryset = self.paginate_queryset(items, request)
+        serializer = self.get_serializer(queryset, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 @api_view(['POST'])

@@ -7,6 +7,7 @@ class UserSerializerBase(serializers.ModelSerializer):
     """
     UserのSerializerベースクラス
     """
+
     class Meta:
         model = User
         fields = (
@@ -33,3 +34,30 @@ class UserReadOnlySerializer(UserSerializerBase):
 class UserUpsertSerializer(UserSerializerBase):
     class Meta(UserSerializerBase.Meta):
         fields = UserSerializerBase.Meta.fields
+
+    def create(self, validated_data):
+        """
+        Userを作成する
+        """
+
+        user = User.objects.filter(handle=validated_data['handle'])
+
+        if user.exists():
+            raise serializers.ValidationError('handle is already exists')
+
+        return User.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Userを更新する
+        """
+
+        user = User.objects.filter(handle=validated_data['handle'])
+
+        if user.exists() and instance != user.first():
+            raise serializers.ValidationError('handle is already exists')
+
+        instance.handle = validated_data['handle']
+        instance.save()
+
+        return instance
