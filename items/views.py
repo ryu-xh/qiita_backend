@@ -51,7 +51,6 @@ class TagsViewSet(APIView, CursorPagination):
 
     def get(self, request: Request, tags: str):
         items = Item.objects.filter(tags__contains=[tags])
-        print(items)
         queryset = self.paginate_queryset(items, request)
         serializer = ItemReadOnlySerializer(queryset, many=True)
         return self.get_paginated_response(serializer.data)
