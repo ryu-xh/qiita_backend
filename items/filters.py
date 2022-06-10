@@ -1,4 +1,4 @@
-from django_filters import rest_framework as filters
+import django_filters as filters
 
 from .models import Item
 
@@ -6,4 +6,8 @@ from .models import Item
 class ItemFilter(filters.FilterSet):
     class Meta:
         model = Item
-        fields = ['title', 'body', 'user__handle']
+        fields = [
+            'title',
+            'body',
+            'user__handle'
+        ]

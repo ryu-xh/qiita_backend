@@ -1,13 +1,13 @@
 from django.db import transaction
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, action
-from rest_framework.pagination import CursorPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from items.serializers import ItemReadOnlySerializer
+from qiita_backend.pagination import CursorPagination
 from qiita_backend.view_base import DisallowModifyOthersMixin
 from .forms import AuthenticationForm
 from .models import User
@@ -45,13 +45,12 @@ class SpecificUserItems(APIView, CursorPagination):
     """
     特定ユーザーのアイテムを取得する
     """
-    serializer_class = ItemReadOnlySerializer
 
     def get(self, request: Request, handle: str):
         user = User.objects.get(handle=handle)
         items = user.items.all()
         queryset = self.paginate_queryset(items, request)
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = ItemReadOnlySerializer(queryset, many=True)
         return self.get_paginated_response(serializer.data)
 
 
