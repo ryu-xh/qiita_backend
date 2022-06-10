@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 
+from qiita_backend.view_base import DisallowModifyOthersMixin
 from .filters import ItemFilter
 from .models import Item
 from .serializers import ItemReadOnlySerializer, ItemUpsertSerializer
@@ -11,15 +12,17 @@ class _ItemViewSet(viewsets.ModelViewSet):
     """
     queryset = Item.objects.all()
     filter_class = ItemFilter
-    search_fields = ['title', 'body', 'tags__name', 'user__handle']
-    # ordering_fields = ['created_at']
-    # ordering = ['-created_at']
+    search_fields = ['title', 'body', 'tags', 'user__handle']
+    lookup_field = 'uuid'
 
     def get_object(self):
         return super().get_object()
 
 
-class ItemViewSet(_ItemViewSet):
+class ItemViewSet(
+    DisallowModifyOthersMixin,
+    _ItemViewSet
+):
     """
     ItemのViewSet
     """

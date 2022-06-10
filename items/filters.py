@@ -1,9 +1,9 @@
-import django_filters
+from django_filters import rest_framework as filters
 
 from .models import Item
 
 
-class ItemFilter(django_filters.FilterSet):
+class ItemFilter(filters.FilterSet):
     class Meta:
         model = Item
-        fields = ['id', 'title', 'body', 'user', 'tags']
+        fields = ['title', 'body', 'user__handle']

@@ -11,18 +11,18 @@ class ItemSerializerBase(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = (
-            'id',
+            'uuid',
             'title',
             'body',
             'tags',
             'created_at',
-            'updated_at'
+            'updated_at',
         )
 
         read_only_fields = (
-            'id',
+            'uuid',
             'created_at',
-            'updated_at'
+            'updated_at',
         )
 
 
@@ -56,5 +56,7 @@ class ItemUpsertSerializer(ItemSerializerBase):
         Itemを作成する
         """
 
-        return Item.objects.create(**validated_data)
-
+        return Item.objects.create(
+            user=self.context['request'].user,
+            **validated_data
+        )
