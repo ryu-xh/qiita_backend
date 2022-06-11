@@ -72,3 +72,13 @@ class Lgtm(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
+
+
+class PopularItem(models.Model):
+    """
+    人気投稿
+    """
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="popular_items", null=False)
+    lgtm_count = models.IntegerField(null=False, default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,9 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+
+    'django_celery_beat',
+    'django_celery_results',
 
     'users',
     'items',
@@ -160,3 +164,21 @@ CORS_ALLOW_ALL_ORIGINS = True
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Celery, Redis
+
+CELERY_ALWAYS_EAGER = True
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Tokyo'
+
+CELERY_BEAT_SCHEDULE = {
+    'assemble-popular-item': {
+        'task': 'items.tasks.assemble_popular_item',
+        'schedule': crontab(minute=0, hour='5,17'),
+    },
+}
