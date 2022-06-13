@@ -25,6 +25,13 @@ class Item(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
+    def is_lgtm(self) -> bool:
+        """
+        LGTMしているか
+        """
+
+        return self.lgtms.exists()
+
     def has_tag(self, tag: str) -> bool:
         """
         この投稿にタグが含まれているか
