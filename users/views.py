@@ -99,7 +99,8 @@ def signup(request):
     data = form.cleaned_data
 
     user = User(
-        handle=data['handle']
+        handle=data['handle'],
+        username=data['username']
     )
 
     user.set_password(data['password'])
