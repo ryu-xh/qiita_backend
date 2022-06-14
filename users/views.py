@@ -50,7 +50,9 @@ class SpecificUserItems(APIView, CursorPagination):
         user = User.objects.get(handle=handle)
         items = user.items.all()
         queryset = self.paginate_queryset(items, request)
-        serializer = ItemReadOnlySerializer(queryset, many=True)
+        serializer = ItemReadOnlySerializer(queryset, context={
+            'request': request
+        }, many=True)
         return self.get_paginated_response(serializer.data)
 
 

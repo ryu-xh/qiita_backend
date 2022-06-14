@@ -32,6 +32,7 @@ class ItemReadOnlySerializer(ItemSerializerBase):
             'user',
             'lgtm_count',
             'is_lgtm',
+            'is_self_item',
         )
 
         read_only_fields = ItemSerializerBase.Meta.read_only_fields + (
@@ -41,9 +42,19 @@ class ItemReadOnlySerializer(ItemSerializerBase):
             'user',
             'lgtm_count',
             'is_lgtm',
+            'is_self_item',
         )
 
     user = UserReadOnlySerializer()
+
+    is_lgtm = serializers.SerializerMethodField()
+    is_self_item = serializers.SerializerMethodField()
+
+    def get_is_lgtm(self, obj):
+        return obj.is_lgtm(self.context['request'].user)
+
+    def get_is_self_item(self, obj):
+        return obj.is_self_item(self.context['request'].user)
 
 
 class ItemUpsertSerializer(ItemSerializerBase):

@@ -25,12 +25,19 @@ class Item(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
-    def is_lgtm(self) -> bool:
+    def is_self_item(self, user: User) -> bool:
+        """
+        自分の投稿か
+        """
+
+        return self.user == user
+
+    def is_lgtm(self, user: User) -> bool:
         """
         LGTMしているか
         """
 
-        return self.lgtms.exists()
+        return self.lgtms.filter(user=user).exists()
 
     def has_tag(self, tag: str) -> bool:
         """
