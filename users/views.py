@@ -54,6 +54,18 @@ class SpecificUserItems(APIView, CursorPagination):
         return self.get_paginated_response(serializer.data)
 
 
+@api_view(['GET'])
+def self(request):
+    """
+    自分のユーザー情報を取得する
+    """
+    user = request.user
+    if user.is_anonymous:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    serializer = UserReadOnlySerializer(user)
+    return Response(serializer.data)
+
+
 @api_view(['POST'])
 def signin(request):
     form = AuthenticationForm(request.data)
