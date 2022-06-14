@@ -68,7 +68,9 @@ class TagsViewSet(APIView, CursorPagination):
     def get(self, request: Request, tags: str):
         items = Item.objects.filter(tags__contains=[tags])
         queryset = self.paginate_queryset(items, request)
-        serializer = ItemReadOnlySerializer(queryset, many=True)
+        serializer = ItemReadOnlySerializer(queryset, context={
+            'request': request
+        }, many=True)
         return self.get_paginated_response(serializer.data)
 
 
@@ -81,5 +83,7 @@ class PopularItemsViewSet(APIView, CursorPagination):
         popular_items = PopularItem.objects.all().order_by('-lgtm_count').values_list('item_id', flat=True)
         items = Item.objects.filter(id__in=popular_items)
         queryset = self.paginate_queryset(items, request)
-        serializer = ItemReadOnlySerializer(queryset, many=True)
+        serializer = ItemReadOnlySerializer(queryset, context={
+            'request': request
+        }, many=True)
         return self.get_paginated_response(serializer.data)
